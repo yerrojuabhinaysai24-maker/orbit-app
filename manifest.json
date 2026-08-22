@@ -3,6 +3,6 @@
   "short_name": "ORBIT",
   "start_url": ".",
   "display": "standalone",
-  "background_color": "#0c0d0f",
-  "theme_color": "#586cff"
+  "background_color": "#0b0c10",
+  "theme_color": "#5d67ff"
 }

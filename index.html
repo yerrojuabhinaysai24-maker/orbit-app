@@ -3,88 +3,95 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#0c0d0f">
+<meta name="theme-color" content="#0b0c10">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <title>ORBIT — The world, in context.</title>
 <link rel="manifest" href="manifest.json">
 <style>
-:root{--bg:#f7f7fa;--surface:#fff;--text:#101114;--muted:#686b74;--line:#e5e6eb;--accent:#586cff;--accent2:#7c5cff;--danger:#ff3b30}
-[data-theme=dark]{--bg:#0c0d0f;--surface:#121419;--text:#f5f5f7;--muted:#a9abb3;--line:#282b32}
-*{box-sizing:border-box}html,body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","SF Pro Text",Inter,system-ui,sans-serif}
-body{min-height:100vh}.app{max-width:760px;margin:auto;padding:env(safe-area-inset-top) 14px calc(82px + env(safe-area-inset-bottom))}
-header{position:sticky;top:0;z-index:20;padding:12px 0 7px;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(18px)}
-.brand{display:flex;align-items:center;gap:9px}.logo{width:34px;height:34px;border-radius:11px;background:linear-gradient(135deg,var(--accent),var(--accent2));display:grid;place-items:center;box-shadow:0 8px 24px #586cff35}.logo:after{content:"";width:14px;height:14px;border:2px solid #fff;border-left-color:transparent;border-radius:50%;transform:rotate(-30deg)}.brandname{font-size:21px;font-weight:800;letter-spacing:-.7px}.tag{font-size:10px;color:var(--muted);margin-top:1px}
-.search{margin-top:12px;background:var(--surface);border:1px solid var(--line);height:44px;border-radius:15px;display:flex;align-items:center;padding:0 13px;gap:8px}.search input{border:0;outline:0;background:none;color:var(--text);width:100%;font-size:15px}
-.chips{display:flex;gap:7px;overflow:auto;padding:10px 0 3px;scrollbar-width:none}.chips::-webkit-scrollbar{display:none}.chip{border:1px solid var(--line);background:var(--surface);color:var(--muted);padding:8px 13px;border-radius:999px;white-space:nowrap;font-weight:650;font-size:12px}.chip.active{color:#fff;border-color:transparent;background:linear-gradient(110deg,var(--accent),var(--accent2))}
-.status{font-size:11px;color:var(--muted);padding:5px 3px;min-height:20px}
-.feed{display:grid;gap:14px;padding-top:4px}.story{background:var(--surface);border:1px solid var(--line);border-radius:23px;overflow:hidden}.hero{width:100%;aspect-ratio:16/9;object-fit:cover;display:block;background:#20232a}.body{padding:15px}.cat{font-size:10px;letter-spacing:.85px;text-transform:uppercase;color:var(--accent);font-weight:800}.headline{font-size:22px;line-height:1.1;letter-spacing:-.55px;font-weight:780;margin:7px 0}.desc{font-size:15px;line-height:1.45;color:var(--muted);margin:0}.meta{display:flex;align-items:center;gap:7px;color:var(--muted);font-size:11px;margin-top:12px}.dot{width:3px;height:3px;border-radius:50%;background:var(--muted)}.actions{display:flex;gap:7px;margin-top:13px;flex-wrap:wrap}.btn{border:1px solid var(--line);background:var(--bg);color:var(--text);border-radius:12px;padding:9px 10px;font-weight:650;font-size:12px}.btn.primary{background:linear-gradient(110deg,var(--accent),var(--accent2));color:#fff;border-color:transparent}
-.fullscreenMode .feed{gap:0;padding:0}.fullscreenMode .story{min-height:calc(100vh - 150px);border-radius:0;border-left:0;border-right:0;display:flex;flex-direction:column}.fullscreenMode .hero{aspect-ratio:auto;height:46vh;min-height:260px}.fullscreenMode .body{padding:18px 8px 24px}.fullscreenMode .headline{font-size:28px}.fullscreenMode .desc{font-size:16px}.fullscreenMode .actions{padding-bottom:10px}
-.empty{text-align:center;color:var(--muted);padding:65px 20px}.loading{text-align:center;color:var(--muted);padding:55px 20px}.error{text-align:center;color:var(--muted);padding:35px 20px}.bottom{position:fixed;z-index:30;left:50%;transform:translateX(-50%);bottom:0;width:min(760px,100%);padding:9px 14px calc(9px + env(safe-area-inset-bottom));background:color-mix(in srgb,var(--surface) 92%,transparent);border-top:1px solid var(--line);backdrop-filter:blur(20px);display:flex;justify-content:space-around}.nav{border:0;background:none;color:var(--muted);font-size:11px;font-weight:700;padding:5px 18px}.nav.active{color:var(--accent)}
-.panel{background:var(--surface);border:1px solid var(--line);border-radius:22px;padding:5px;overflow:hidden}.setting{display:flex;align-items:center;justify-content:space-between;padding:16px 13px;border-bottom:1px solid var(--line)}.setting:last-child{border-bottom:0}.setting b{font-size:14px}.setting small{display:block;color:var(--muted);margin-top:3px;font-size:11px}.setting button,.setting select{border:1px solid var(--line);background:var(--bg);color:var(--text);border-radius:10px;padding:8px 10px}.toggle{width:44px!important;height:25px;border-radius:20px!important;background:#777!important;color:transparent!important;padding:0!important}.toggle.on{background:var(--accent)!important}
-.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:82px;background:#17191e;color:#fff;padding:11px 15px;border-radius:14px;font-size:13px;display:none;z-index:40}.refresh{position:fixed;top:9px;left:50%;transform:translateX(-50%);background:var(--text);color:var(--bg);border-radius:20px;padding:7px 12px;font-size:11px;font-weight:700;display:none;z-index:50}
-.modal{position:fixed;inset:0;background:#0008;z-index:60;display:none;align-items:flex-end}.sheet{width:100%;max-width:760px;margin:auto;background:var(--surface);border-radius:25px 25px 0 0;padding:18px 18px calc(20px + env(safe-area-inset-bottom));max-height:78vh;overflow:auto}.sheet h3{margin:0 0 14px}.lang{display:flex;justify-content:space-between;padding:14px 4px;border-bottom:1px solid var(--line)}.lang button{border:0;background:none;color:var(--text);font-size:15px;width:100%;text-align:left}
+:root{--bg:#f6f7fa;--card:#fff;--text:#111318;--muted:#70747d;--line:#e5e7ec;--a:#5d67ff;--a2:#855cff}
+[data-theme=dark]{--bg:#0b0c10;--card:#15171d;--text:#f5f6f8;--muted:#a7aab3;--line:#292c34}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display",Inter,system-ui,sans-serif}
+.app{max-width:760px;margin:auto;padding:env(safe-area-inset-top) 12px 85px}header{position:sticky;top:0;z-index:10;background:color-mix(in srgb,var(--bg) 90%,transparent);backdrop-filter:blur(18px);padding:12px 2px 8px}
+.brand{display:flex;align-items:center;gap:9px}.logo{width:34px;height:34px;border-radius:11px;background:linear-gradient(135deg,var(--a),var(--a2));display:grid;place-items:center}.logo:after{content:"";width:14px;height:14px;border:2px solid white;border-left-color:transparent;border-radius:50%;transform:rotate(-30deg)}.name{font-size:21px;font-weight:800;letter-spacing:-.7px}.tag{font-size:10px;color:var(--muted)}
+.search{height:44px;margin-top:12px;background:var(--card);border:1px solid var(--line);border-radius:15px;display:flex;align-items:center;padding:0 13px;gap:8px}.search input{width:100%;border:0;outline:0;background:none;color:var(--text);font-size:15px}
+.chips{display:flex;gap:7px;overflow:auto;padding:10px 0 3px}.chip{border:1px solid var(--line);background:var(--card);color:var(--muted);border-radius:99px;padding:8px 13px;white-space:nowrap;font-size:12px;font-weight:700}.chip.active{background:linear-gradient(110deg,var(--a),var(--a2));color:white;border-color:transparent}
+.status{font-size:11px;color:var(--muted);min-height:18px;padding:4px}
+.feed{display:grid;gap:14px;padding-top:5px}.story{background:var(--card);border:1px solid var(--line);border-radius:23px;overflow:hidden}.story img{width:100%;aspect-ratio:16/9;object-fit:cover;background:#20232a}.body{padding:15px}.cat{text-transform:uppercase;letter-spacing:.8px;color:var(--a);font-size:10px;font-weight:800}.title{font-size:23px;line-height:1.1;font-weight:800;letter-spacing:-.55px;margin:7px 0}.desc{color:var(--muted);font-size:15px;line-height:1.45}.meta{font-size:11px;color:var(--muted);margin-top:11px}.actions{display:flex;gap:7px;margin-top:13px}.btn{border:1px solid var(--line);background:var(--bg);color:var(--text);border-radius:12px;padding:9px 11px;font-size:12px;font-weight:700}.primary{background:linear-gradient(110deg,var(--a),var(--a2));color:#fff;border-color:transparent}.bottom{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:min(760px,100%);z-index:20;background:color-mix(in srgb,var(--card) 93%,transparent);border-top:1px solid var(--line);display:flex;justify-content:space-around;padding:9px 10px calc(9px + env(safe-area-inset-bottom));backdrop-filter:blur(18px)}.nav{border:0;background:none;color:var(--muted);font-size:11px;font-weight:700}.nav.active{color:var(--a)}.loading,.empty{text-align:center;color:var(--muted);padding:60px 20px}.error{text-align:center;color:var(--muted);padding:45px 20px}.toast{display:none;position:fixed;z-index:50;bottom:85px;left:50%;transform:translateX(-50%);background:#17191f;color:white;padding:11px 15px;border-radius:14px;font-size:13px}
 </style>
 </head>
 <body>
 <div class="app" id="app">
 <header>
- <div class="brand"><div class="logo"></div><div><div class="brandname">ORBIT</div><div class="tag">The world, in context.</div></div></div>
- <div class="search">⌕ <input id="search" placeholder="Search stories"></div>
- <div class="chips" id="chips"></div>
- <div class="status" id="status">Live feed • fetching latest stories…</div>
+<div class="brand"><div class="logo"></div><div><div class="name">ORBIT</div><div class="tag">The world, in context.</div></div></div>
+<div class="search">⌕ <input id="q" placeholder="Search stories"></div>
+<div class="chips" id="chips"></div>
+<div class="status" id="status">Connecting to live news…</div>
 </header>
 <main id="feed" class="feed"></main>
 </div>
 <nav class="bottom">
- <button class="nav active" data-page="home">⌂<br>Home</button>
- <button class="nav" data-page="saved">♡<br>Saved</button>
- <button class="nav" data-page="settings">⚙<br>Settings</button>
+<button class="nav active" data-p="home">⌂<br>Home</button>
+<button class="nav" data-p="saved">♡<br>Saved</button>
+<button class="nav" data-p="settings">⚙<br>Settings</button>
 </nav>
-<div id="toast" class="toast"></div><div id="refresh" class="refresh">Refreshing ORBIT…</div>
-<div id="langModal" class="modal" onclick="if(event.target===this)closeLang()"><div class="sheet"><h3>Choose your language</h3><div id="langList"></div><button class="btn primary" style="width:100%;margin-top:14px" onclick="closeLang()">Done</button></div></div>
+<div id="toast" class="toast"></div>
+
 <script>
-const GDELT='https://api.gdeltproject.org/api/v2/doc/doc';
-const categories=["For You","Your Country","World","Technology","Business","Sports","Entertainment","Health","Science","Education","Politics"];
-const queries={World:'world',Technology:'technology OR artificial intelligence',Business:'business OR economy OR markets',Sports:'sports',Entertainment:'entertainment',Health:'health',Science:'science OR space',Education:'education',Politics:'politics'};
-const langs=["English","हिन्दी","తెలుగు","বাংলা","தமிழ்","मराठी","ગુજરાતી","ಕನ್ನಡ","മലയാളം","ਪੰਜਾਬੀ","Español","Français","Deutsch","Português","日本語","한국어","中文"];
-let category=localStorage.getItem("orbitCategory")||"For You", page="home", articles=[], saved=JSON.parse(localStorage.getItem("orbitSaved")||"[]"), country=localStorage.getItem("orbitCountry")||"Not selected", loading=false;
-function renderChips(){chips.innerHTML=categories.map(x=>`<button class="chip ${x===category?'active':''}" onclick="setCat('${x}')">${x}</button>`).join("")}
-function gdeltUrl(q){return GDELT+"?query="+encodeURIComponent(q)+"&mode=artlist&maxrecords=24&timespan=1d&sort=datedesc&format=json";}
-function classify(title){let t=title.toLowerCase();for(const [c,q] of Object.entries(queries)){if(q.split(" OR ").some(k=>t.includes(k.replace(/"/g,""))))return c}return category==="For You"?"World":category}
-function timeAgo(d){let x=(Date.now()-new Date(d).getTime())/60000;if(!isFinite(x))return "";if(x<60)return Math.max(1,Math.round(x))+"m ago";if(x<1440)return Math.round(x/60)+"h ago";return Math.round(x/1440)+"d ago"}
-async function fetchNews(cat=category){loading=true;status.textContent="Live feed • fetching latest stories…";feed.innerHTML='<div class="loading">Finding the latest stories…</div>';let q=cat==="For You"?"(technology OR business OR science OR world OR sports OR health)":cat==="Your Country"?(country==="Not selected"?"india OR world":country):queries[cat]||cat;try{let r=await fetch(gdeltUrl(q));if(!r.ok)throw Error("network");let data=await r.json();let arr=(data.articles||[]).filter(a=>a.title&&a.url).map(a=>({title:a.title,url:a.url,image:a.socialimage||"",source:a.domain||"Source",date:a.seendate,cat:cat==="For You"?classify(a.title):cat}));let seen=new Set();articles=arr.filter(a=>{let k=a.url;if(seen.has(k))return false;seen.add(k);return true}).slice(0,18);status.textContent=`Live feed • ${articles.length} stories • updated just now`;render();}catch(e){status.textContent="Live feed unavailable right now";feed.innerHTML='<div class="error">We couldn’t reach the live news feed.<br><br><button class="btn primary" onclick="fetchNews()">Try again</button></div>'}finally{loading=false}}
-function card(a,i){let is=saved.includes(a.url);return `<article class="story"><img class="hero" src="${a.image}" alt="" ${a.image?'':'style="display:none"'} onerror="this.style.display='none'"><div class="body"><div class="cat">${a.cat||category}</div><div class="headline">${esc(a.title)}</div><p class="desc">${esc(explain(a.title))}</p><div class="meta"><b>${esc(a.source)}</b><span class="dot"></span>${timeAgo(a.date)}</div><div class="actions"><button class="btn" onclick="save('${encodeURIComponent(a.url)}')">${is?'♥ Saved':'♡ Save'}</button><button class="btn" onclick="share('${encodeURIComponent(a.title)}','${encodeURIComponent(a.url)}')">↗ Share</button><button class="btn primary" onclick="openSource('${encodeURIComponent(a.url)}')">Read source</button></div></div></article>`}
-function explain(t){return t.length>170?t.slice(0,167)+"…":"This is a live headline from current online news coverage. Open the source for the full report and details."}
-function render(){renderChips();if(page==="settings"){renderSettings();return}if(page==="saved"){renderSaved();return}let q=search.value.trim().toLowerCase();let data=articles.filter(a=>!q||(a.title+a.source).toLowerCase().includes(q));app.classList.toggle("fullscreenMode",category!=="For You"&&category!=="Your Country");feed.innerHTML=data.length?data.map(card).join(""):'<div class="empty">No stories found for this selection.</div>'}
-function renderSaved(){app.classList.remove("fullscreenMode");let data=articles.filter(a=>saved.includes(a.url));feed.innerHTML=data.length?data.map(card).join(""):'<div class="empty">Nothing saved yet.<br>Save stories to find them here.</div>'}
-function renderSettings(){app.classList.remove("fullscreenMode");let theme=localStorage.getItem("orbitTheme")||"System";feed.innerHTML=`<h2 style="margin:16px 4px">Settings</h2><div class="panel">
-<div class="setting"><div><b>Language</b><small>Preferred app language</small></div><button onclick="openLang()">${localStorage.getItem("orbitLang")||"English"} ›</button></div>
-<div class="setting"><div><b>Region</b><small>Country used for local news</small></div><button onclick="chooseCountry()">${country} ›</button></div>
-<div class="setting"><div><b>Theme</b><small>Light, dark or system</small></div><select onchange="setTheme(this.value)"><option ${theme==="System"?"selected":""}>System</option><option ${theme==="Light"?"selected":""}>Light</option><option ${theme==="Dark"?"selected":""}>Dark</option></select></div>
-<div class="setting"><div><b>Text size</b><small>Comfortable reading</small></div><select><option>Medium</option><option>Large</option></select></div>
-<div class="setting"><div><b>Breaking News</b><small>Important alerts</small></div><button class="toggle on" onclick="this.classList.toggle('on')">●</button></div>
-<div class="setting"><div><b>Daily Briefing</b><small>One concise update</small></div><button class="toggle on" onclick="this.classList.toggle('on')">●</button></div>
-<div class="setting"><div><b>Category Updates</b><small>New stories in selected topics</small></div><button class="toggle" onclick="this.classList.toggle('on')">●</button></div>
-</div><h3 style="margin:24px 4px 10px">Other</h3><div class="panel"><div class="setting"><b>Privacy Policy</b><span>›</span></div><div class="setting"><b>Terms of Use</b><span>›</span></div><div class="setting"><b>About ORBIT</b><span>›</span></div></div>`}
-function setCat(x){category=x;localStorage.setItem("orbitCategory",x);page="home";document.querySelectorAll(".nav").forEach(n=>n.classList.toggle("active",n.dataset.page==="home"));search.value="";fetchNews(x)}
+const proxy="https://api.rss2json.com/v1/api.json?rss_url=";
+const feeds={
+"World":"https://feeds.bbci.co.uk/news/world/rss.xml",
+"Technology":"https://feeds.bbci.co.uk/news/technology/rss.xml",
+"Business":"https://feeds.bbci.co.uk/news/business/rss.xml",
+"Sports":"https://feeds.bbci.co.uk/sport/0/rss.xml",
+"Entertainment":"https://feeds.bbci.co.uk/news/entertainment_and_arts/rss.xml",
+"Health":"https://feeds.bbci.co.uk/news/health/rss.xml",
+"Science":"https://feeds.bbci.co.uk/news/science_and_environment/rss.xml",
+"Education":"https://feeds.bbci.co.uk/news/education/rss.xml",
+"Politics":"https://feeds.bbci.co.uk/news/politics/rss.xml",
+"Top Stories":"https://feeds.bbci.co.uk/news/rss.xml"
+};
+const cats=["Top Stories","World","Technology","Business","Sports","Entertainment","Health","Science","Education","Politics"];
+let cat="Top Stories",articles=[],saved=JSON.parse(localStorage.getItem("orbitSaved")||"[]"),page="home";
+
+const $=id=>document.getElementById(id);
+function chips(){ $("chips").innerHTML=cats.map(c=>`<button class="chip ${c===cat?'active':''}" onclick="selectCat('${c}')">${c}</button>`).join("") }
+function ago(d){let n=(Date.now()-new Date(d).getTime())/60000;if(!isFinite(n))return "";return n<60?Math.max(1,Math.round(n))+"m ago":n<1440?Math.round(n/60)+"h ago":Math.round(n/1440)+"d ago"}
+function esc(s){return String(s||"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]))}
+function imageOf(x){return x.thumbnail||x.enclosure?.link||""}
+function descriptionOf(x){let s=(x.description||"").replace(/<[^>]*>/g," ").replace(/\s+/g," ").trim();return s||"Open the original report for the full story and details."}
+async function load(c=cat){
+  $("status").textContent="Live feed • loading latest stories…";
+  $("feed").innerHTML='<div class="loading">Finding the latest stories…</div>';
+  try{
+    const u=proxy+encodeURIComponent(feeds[c]);
+    const r=await fetch(u,{cache:"no-store"});
+    if(!r.ok)throw new Error("feed");
+    const data=await r.json();
+    if(data.status!=="ok"||!data.items?.length)throw new Error("empty");
+    articles=data.items.map(x=>({title:x.title,url:x.link,date:x.pubDate,source:data.feed?.title||"BBC News",image:imageOf(x),desc:descriptionOf(x),cat:c}));
+    $("status").textContent=`Live feed • ${articles.length} current stories • ${new Date().toLocaleTimeString([], {hour:"numeric",minute:"2-digit"})}`;
+    render();
+  }catch(e){
+    $("status").textContent="Live feed unavailable";
+    $("feed").innerHTML=`<div class="error">We couldn't reach this live RSS feed right now.<br><br><button class="btn primary" onclick="load()">Try again</button><p style="font-size:11px;margin-top:18px">This test uses public RSS feeds through a free RSS-to-JSON bridge. No paid news API or API key is used.</p></div>`;
+  }
+}
+function card(x){let s=saved.includes(x.url);return `<article class="story"><img src="${esc(x.image)}" ${x.image?'':'style="display:none"'} onerror="this.style.display='none'"><div class="body"><div class="cat">${esc(x.cat)}</div><div class="title">${esc(x.title)}</div><div class="desc">${esc(x.desc)}</div><div class="meta"><b>${esc(x.source)}</b> · ${ago(x.date)}</div><div class="actions"><button class="btn" onclick="save('${encodeURIComponent(x.url)}')">${s?'♥ Saved':'♡ Save'}</button><button class="btn" onclick="share('${encodeURIComponent(x.title)}','${encodeURIComponent(x.url)}')">↗ Share</button><button class="btn primary" onclick="location.href='${encodeURI(x.url)}'">Read source</button></div></div></article>`}
+function render(){
+  chips();
+  if(page==="saved"){let a=articles.filter(x=>saved.includes(x.url));$("feed").innerHTML=a.length?a.map(card).join(""):'<div class="empty">Nothing saved yet.</div>';return}
+  if(page==="settings"){$("feed").innerHTML=`<h2>Settings</h2><article class="story"><div class="body"><div class="title" style="font-size:18px">Language</div><div class="desc">English</div><div class="actions"><button class="btn primary">Choose language</button></div><div class="title" style="font-size:18px;margin-top:22px">Region</div><div class="desc">Select your country for local news.</div><div class="actions"><button class="btn">Select country</button></div><div class="title" style="font-size:18px;margin-top:22px">Appearance</div><div class="actions"><button class="btn" onclick="theme()">Toggle light / dark</button></div></div></article>`;return}
+  let term=$("q").value.toLowerCase();let a=articles.filter(x=>(x.title+x.desc).toLowerCase().includes(term));$("feed").innerHTML=a.length?a.map(card).join(""):'<div class="empty">No matching stories.</div>';
+}
+function selectCat(c){cat=c;page="home";$("q").value="";document.querySelectorAll(".nav").forEach(x=>x.classList.toggle("active",x.dataset.p==="home"));load(c)}
 function save(u){u=decodeURIComponent(u);saved=saved.includes(u)?saved.filter(x=>x!==u):[...saved,u];localStorage.setItem("orbitSaved",JSON.stringify(saved));toast(saved.includes(u)?"Saved":"Removed");render()}
-async function share(t,u){t=decodeURIComponent(t);u=decodeURIComponent(u);if(navigator.share)navigator.share({title:"ORBIT",text:t+"\n\nThe world, in context.",url:u});else{try{await navigator.clipboard.writeText(t+" — ORBIT\n"+u);toast("Share link copied")}catch{toast("Share unavailable")}}}
-function openSource(u){location.href=decodeURIComponent(u)}
-function chooseCountry(){let x=prompt("Enter your country, e.g. India, United States, United Kingdom");if(x){country=x;localStorage.setItem("orbitCountry",x);toast("Region updated");render()}}
-function openLang(){langList.innerHTML=langs.map(l=>`<div class="lang"><button onclick="setLang('${l}')">${l}</button><span>${(localStorage.getItem("orbitLang")||"English")===l?"✓":""}</span></div>`).join("");langModal.style.display="flex"}
-function closeLang(){langModal.style.display="none"}
-function setLang(l){localStorage.setItem("orbitLang",l);toast("Language set to "+l);openLang();renderSettings()}
-function setTheme(x){localStorage.setItem("orbitTheme",x);applyTheme();renderSettings()}
-function applyTheme(){let x=localStorage.getItem("orbitTheme")||"System";document.documentElement.setAttribute("data-theme",x==="Dark"?"dark":x==="Light"?"light":(matchMedia("(prefers-color-scheme:dark)").matches?"dark":"light"))}
-function toast(t){toastEl.textContent=t;toastEl.style.display="block";setTimeout(()=>toastEl.style.display="none",1800)}
-function esc(x){return String(x||"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]))}
-const feed=document.getElementById("feed"),chips=document.getElementById("chips"),search=document.getElementById("search"),status=document.getElementById("status"),toastEl=document.getElementById("toast"),refreshEl=document.getElementById("refresh"),app=document.getElementById("app"),langModal=document.getElementById("langModal"),langList=document.getElementById("langList");
-search.addEventListener("input",render);
-document.querySelectorAll(".nav").forEach(b=>b.onclick=()=>{page=b.dataset.page;document.querySelectorAll(".nav").forEach(n=>n.classList.toggle("active",n===b));render()});
-function refresh(){refreshEl.style.display="block";fetchNews(category).finally(()=>refreshEl.style.display="none")}
-let sy=0;document.addEventListener("touchstart",e=>{sy=e.touches[0].clientY},{passive:true});document.addEventListener("touchend",e=>{let dy=e.changedTouches[0].clientY-sy;if(scrollY<10&&dy>85)refresh()},{passive:true});
-applyTheme();renderChips();fetchNews(category);
+async function share(t,u){t=decodeURIComponent(t);u=decodeURIComponent(u);if(navigator.share)navigator.share({title:"ORBIT",text:t+"\n\nThe world, in context.",url:u});else toast("Share unavailable")}
+function toast(t){$("toast").textContent=t;$("toast").style.display="block";setTimeout(()=>$("toast").style.display="none",1600)}
+function theme(){let d=document.documentElement.getAttribute("data-theme")==="dark";document.documentElement.setAttribute("data-theme",d?"light":"dark")}
+$("q").addEventListener("input",render);
+document.querySelectorAll(".nav").forEach(b=>b.onclick=()=>{page=b.dataset.p;document.querySelectorAll(".nav").forEach(x=>x.classList.toggle("active",x===b));render()});
+let startY=0;document.addEventListener("touchstart",e=>startY=e.touches[0].clientY,{passive:true});document.addEventListener("touchend",e=>{if(scrollY<10&&e.changedTouches[0].clientY-startY>90)load()},{passive:true});
+chips();load();
 </script>
 </body>
 </html>
