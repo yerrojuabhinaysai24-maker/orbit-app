@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0c0d0f">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>ORBIT — The world, in context.</title>
+<link rel="manifest" href="manifest.json">
+<style>
+:root{--bg:#f7f7fa;--surface:#fff;--text:#101114;--muted:#6d7078;--line:#e7e7ec;--accent:#6267ff;--accent2:#8a5cff;--danger:#ff3b30}
+[data-theme=dark]{--bg:#0c0d0f;--surface:#14161b;--text:#f4f4f7;--muted:#a8abb4;--line:#292c33}
+*{box-sizing:border-box}html,body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","SF Pro Text",Inter,system-ui,sans-serif}
+body{min-height:100vh}.app{max-width:760px;margin:auto;padding:env(safe-area-inset-top) 16px calc(86px + env(safe-area-inset-bottom))}
+header{position:sticky;top:0;z-index:5;padding:14px 0 10px;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(18px)}
+.brand{display:flex;align-items:center;gap:10px}.logo{width:34px;height:34px;border-radius:11px;background:linear-gradient(135deg,var(--accent),var(--accent2));display:grid;place-items:center;color:#fff;font-weight:800;box-shadow:0 7px 20px #6267ff30}.logo:after{content:"";width:15px;height:15px;border:2px solid #fff;border-left-color:transparent;border-radius:50%;transform:rotate(-28deg)}.brand b{font-size:21px;letter-spacing:-.6px}.tag{font-size:10px;color:var(--muted);margin-top:1px}
+.search{margin-top:14px;background:var(--surface);border:1px solid var(--line);height:46px;border-radius:16px;display:flex;align-items:center;padding:0 14px;gap:9px}.search input{border:0;outline:0;background:none;color:var(--text);width:100%;font-size:15px}.chips{display:flex;gap:8px;overflow:auto;padding:12px 0 6px;scrollbar-width:none}.chips::-webkit-scrollbar{display:none}.chip{border:1px solid var(--line);background:var(--surface);color:var(--muted);padding:9px 14px;border-radius:999px;white-space:nowrap;font-weight:650;font-size:13px}.chip.active{color:white;border-color:transparent;background:linear-gradient(110deg,var(--accent),var(--accent2))}
+.feed{display:grid;gap:16px;padding-top:10px}.story{background:var(--surface);border:1px solid var(--line);border-radius:24px;overflow:hidden;box-shadow:0 10px 35px #00000008}.hero{width:100%;aspect-ratio:16/9;object-fit:cover;display:block}.body{padding:16px}.cat{font-size:11px;letter-spacing:.8px;text-transform:uppercase;color:var(--accent);font-weight:800}.headline{font-size:23px;line-height:1.08;letter-spacing:-.55px;font-weight:780;margin:7px 0}.desc{font-size:15.5px;line-height:1.45;color:var(--muted);margin:0}.meta{display:flex;align-items:center;gap:8px;color:var(--muted);font-size:12px;margin-top:14px}.dot{width:3px;height:3px;border-radius:50%;background:var(--muted)}.actions{display:flex;gap:8px;margin-top:14px}.btn{border:1px solid var(--line);background:var(--bg);color:var(--text);border-radius:13px;padding:9px 11px;font-weight:650;font-size:12px}.btn.primary{background:linear-gradient(110deg,var(--accent),var(--accent2));color:#fff;border-color:transparent}.empty{text-align:center;color:var(--muted);padding:60px 20px}.bottom{position:fixed;z-index:10;left:50%;transform:translateX(-50%);bottom:0;width:min(760px,100%);padding:10px 18px calc(10px + env(safe-area-inset-bottom));background:color-mix(in srgb,var(--surface) 92%,transparent);border-top:1px solid var(--line);backdrop-filter:blur(20px);display:flex;justify-content:space-around}.nav{border:0;background:none;color:var(--muted);font-size:11px;font-weight:700;padding:6px 18px}.nav.active{color:var(--accent)}.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:82px;background:#17191e;color:#fff;padding:11px 15px;border-radius:14px;font-size:13px;display:none;z-index:20}.refresh{position:fixed;top:10px;left:50%;transform:translateX(-50%);background:var(--text);color:var(--bg);border-radius:20px;padding:7px 12px;font-size:11px;font-weight:700;display:none;z-index:30}
+</style>
+</head>
+<body>
+<div class="app">
+<header>
+ <div class="brand"><div class="logo"></div><div><div class="brand"><b>ORBIT</b></div><div class="tag">The world, in context.</div></div></div>
+ <div class="search">⌕ <input id="search" placeholder="Search stories"></div>
+ <div class="chips" id="chips"></div>
+</header>
+<main id="feed" class="feed"></main>
+</div>
+<nav class="bottom">
+ <button class="nav active" data-page="home">⌂<br>Home</button>
+ <button class="nav" data-page="saved">♡<br>Saved</button>
+ <button class="nav" data-page="settings">⚙<br>Settings</button>
+</nav>
+<div id="toast" class="toast"></div><div id="refresh" class="refresh">Checking for latest news…</div>
+<script>
+const stories=[
+{c:"World",h:"Global markets react as major economic data reshapes expectations",d:"Investors are adjusting to new economic signals, with markets moving as businesses and governments assess what the latest numbers mean for growth.",s:"Reuters",t:"18 min ago",i:"https://images.unsplash.com/photo-1526304640581-d334cdbbf45e?auto=format&fit=crop&w=1200&q=80"},
+{c:"Technology",h:"New advances are changing how people use AI every day",d:"The latest generation of AI tools is moving beyond simple chat and into everyday tasks, making software more capable of helping people create, search and work.",s:"Technology Desk",t:"32 min ago",i:"https://images.unsplash.com/photo-1677442136019-21780ecad995?auto=format&fit=crop&w=1200&q=80"},
+{c:"Science",h:"Scientists reveal a closer look at a changing planet",d:"New observations are giving researchers a clearer picture of how Earth's systems are changing and what those changes could mean in the years ahead.",s:"Science News",t:"1 hr ago",i:"https://images.unsplash.com/photo-1446776877081-d282a0f896e2?auto=format&fit=crop&w=1200&q=80"},
+{c:"Business",h:"Companies rethink how they build for a rapidly changing economy",d:"Businesses are adapting investment and hiring plans as technology, consumer demand and global economic conditions continue to shift.",s:"Business Desk",t:"2 hrs ago",i:"https://images.unsplash.com/photo-1497366754035-f200968a6e72?auto=format&fit=crop&w=1200&q=80"},
+{c:"Education",h:"A new approach is changing how students learn",d:"Schools and educators are experimenting with more flexible ways to help students understand difficult subjects and learn at their own pace.",s:"Education Desk",t:"3 hrs ago",i:"https://images.unsplash.com/photo-1503676260728-1c00da094a0b?auto=format&fit=crop&w=1200&q=80"}
+];
+let saved=JSON.parse(localStorage.getItem("orbitSaved")||"[]"), category="All", page="home";
+const cats=["All","Trending","World","Technology","Business","Science","Education","Sports","Entertainment"];
+function renderChips(){chips.innerHTML=cats.map(x=>`<button class="chip ${x===category?'active':''}" onclick="setCat('${x}')">${x}</button>`).join("")}
+function filtered(){let q=search.value.trim().toLowerCase();return stories.filter(x=>(category==="All"||x.c===category||category==="Trending")&&(!q||(x.h+x.d+x.c).toLowerCase().includes(q)))}
+function render(){renderChips(); if(page==="settings"){renderSettings();return} if(page==="saved"){renderSaved();return} let data=filtered();feed.innerHTML=data.length?data.map((x,n)=>card(x,n)).join(""):`<div class="empty">No stories found.<br>Try another category or search.</div>`}
+function card(x,n){let is=saved.includes(x.h);return `<article class="story"><img class="hero" src="${x.i}" alt="" onerror="this.style.display='none'"><div class="body"><div class="cat">${x.c}</div><div class="headline">${x.h}</div><p class="desc">${x.d}</p><div class="meta"><b>${x.s}</b><span class="dot"></span>${x.t}</div><div class="actions"><button class="btn" onclick="save('${encodeURIComponent(x.h)}')">${is?'♥ Saved':'♡ Save'}</button><button class="btn" onclick="share('${encodeURIComponent(x.h)}')">↗ Share</button><button class="btn primary" onclick="source('${encodeURIComponent(x.h)}')">Read source</button></div></div></article>${n===2?`<div class="story"><div class="body"><div class="cat">Sponsored</div><div class="headline" style="font-size:19px">An ad would appear here</div><p class="desc">V1 placement reserved for a clearly labelled in-feed advertisement.</p><div class="meta">Advertisement</div></div></div>`:''}`}
+function renderSaved(){let data=stories.filter(x=>saved.includes(x.h));feed.innerHTML=data.length?data.map((x,n)=>card(x,n)).join(""):`<div class="empty">Nothing saved yet.<br>Save stories to find them here.</div>`}
+function renderSettings(){feed.innerHTML=`<section class="story"><div class="body"><div class="headline">Settings</div><p class="desc">Your preferences stay on this device in this prototype.</p><div class="actions"><button class="btn" onclick="toggleTheme()">Toggle light / dark</button><button class="btn" onclick="chooseLang()">Language: ${localStorage.getItem("orbitLang")||"English"}</button></div><div class="meta">Country: ${localStorage.getItem("orbitCountry")||"Not selected"}</div></div></section><section class="story"><div class="body"><div class="cat">ORBIT</div><div class="headline" style="font-size:19px">The world, in context.</div><p class="desc">Prototype build for iPhone testing.</p></div></section>`}
+function setCat(x){category=x;page="home";render()}
+function save(h){h=decodeURIComponent(h);saved=saved.includes(h)?saved.filter(x=>x!==h):[...saved,h];localStorage.setItem("orbitSaved",JSON.stringify(saved));toast(saved.includes(h)?"Saved":"Removed");render()}
+function share(h){h=decodeURIComponent(h);if(navigator.share)navigator.share({title:"ORBIT",text:h+"\n\nThe world, in context.",url:location.href});else{navigator.clipboard?.writeText(h+" — ORBIT");toast("Share text copied")}}
+function source(h){toast("Prototype: source link will open the original publisher in the production build")}
+function toast(t){toastEl.textContent=t;toastEl.style.display="block";setTimeout(()=>toastEl.style.display="none",1800)}
+function toggleTheme(){let x=document.documentElement.getAttribute("data-theme")==="dark"?"light":"dark";document.documentElement.setAttribute("data-theme",x);localStorage.setItem("orbitTheme",x)}
+function chooseLang(){let x=prompt("Preferred language (prototype):","English");if(x){localStorage.setItem("orbitLang",x);render()}}
+function refresh(){refreshEl.style.display="block";setTimeout(()=>{stories.unshift({...stories[0],h:"Latest update: "+stories[0].h,t:"Just now"});refreshEl.style.display="none";toast("Latest stories loaded");render()},900)}
+const feed=document.getElementById("feed"),chips=document.getElementById("chips"),search=document.getElementById("search"),toastEl=document.getElementById("toast"),refreshEl=document.getElementById("refresh");
+search.addEventListener("input",render);
+document.querySelectorAll(".nav").forEach(b=>b.onclick=()=>{page=b.dataset.page;document.querySelectorAll(".nav").forEach(n=>n.classList.toggle("active",n===b));render()});
+let sy=0;document.addEventListener("touchstart",e=>{if(scrollY<8)sy=e.touches[0].clientY},{passive:true});document.addEventListener("touchend",e=>{let dy=e.changedTouches[0].clientY-sy;if(scrollY<8&&dy>90)refresh()},{passive:true});
+let th=localStorage.getItem("orbitTheme");if(th)document.documentElement.setAttribute("data-theme",th);render();
+</script>
+</body>
+</html>

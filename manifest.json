@@ -1,0 +1,9 @@
+{
+  "name": "ORBIT \u2014 The world, in context.",
+  "short_name": "ORBIT",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#0c0d0f",
+  "theme_color": "#586cff",
+  "icons": []
+}
