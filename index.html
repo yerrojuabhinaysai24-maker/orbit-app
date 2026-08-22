@@ -26,11 +26,11 @@ button{cursor:pointer}
 .top{position:absolute;z-index:60;top:0;left:0;right:0;padding:calc(10px + env(safe-area-inset-top)) 16px 8px;
 background:linear-gradient(to bottom,rgba(0,0,0,.78),transparent);pointer-events:none}
 .light .top{background:linear-gradient(to bottom,rgba(255,255,255,.86),transparent)}
-.toprow{display:flex;align-items:center;gap:10px}.logo{width:36px;height:36px;border-radius:12px;
+.toprow{display:flex;align-items:center;gap:10px}.toprow .search:first-of-type{margin-left:auto}.logo{width:36px;height:36px;border-radius:12px;
 background:linear-gradient(135deg,var(--accent),var(--accent2));display:grid;place-items:center;box-shadow:0 8px 28px #0008}
 .logo:after{content:"";width:15px;height:15px;border:2px solid white;border-left-color:transparent;border-radius:50%;transform:rotate(-30deg)}
 .brand{font-size:20px;font-weight:850;letter-spacing:-.7px}.tag{font-size:10px;color:#ddd}.light .tag{color:#555}
-.search{margin-left:auto;width:42px;height:42px;border-radius:14px;background:#11131bd9;border:1px solid #ffffff24;
+.search{width:42px;height:42px;border-radius:14px;background:#11131bd9;border:1px solid #ffffff24;
 color:#fff;display:grid;place-items:center;font-size:22px;pointer-events:auto}
 .light .search{background:#fff;color:#111;border-color:#0001}
 .categorybar{position:absolute;z-index:61;top:calc(58px + env(safe-area-inset-top));left:0;right:0;padding:7px 14px;
@@ -41,26 +41,27 @@ font-size:11px;font-weight:750;backdrop-filter:blur(14px);white-space:nowrap}
 .chip.active{background:linear-gradient(110deg,var(--accent),var(--accent2));color:#fff;border-color:transparent;box-shadow:0 4px 18px #635bff55}
 .chip.loading:after{content:"";display:inline-block;width:8px;height:8px;margin-left:6px;border:1px solid #fff;border-top-color:transparent;border-radius:50%;animation:spin .7s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
-.feed{height:100dvh;overflow-y:auto;scroll-snap-type:y mandatory;overscroll-behavior-y:contain;-webkit-overflow-scrolling:touch}
-.story{position:relative;height:100dvh;min-height:100dvh;scroll-snap-align:start;scroll-snap-stop:always;overflow:hidden;background:#0e1015}
+.refreshing{animation:spin .8s linear infinite!important}
+.feed{position:absolute;left:0;right:0;top:calc(112px + env(safe-area-inset-top));bottom:calc(58px + env(safe-area-inset-bottom));height:auto;overflow-y:auto;scroll-snap-type:y mandatory;overscroll-behavior-y:contain;-webkit-overflow-scrolling:touch}
+.story{position:relative;height:100%;min-height:100%;scroll-snap-align:start;scroll-snap-stop:always;overflow:hidden;background:#0e1015}
 .hero{position:absolute;inset:0;background:#171920}.hero img{width:100%;height:100%;object-fit:cover;display:block}.hero:after{content:"";position:absolute;inset:0;
 background:linear-gradient(to bottom,rgba(0,0,0,.62) 0%,rgba(0,0,0,.08) 30%,rgba(0,0,0,.08) 45%,rgba(0,0,0,.93) 100%)}
 .noimage{width:100%;height:100%;background:radial-gradient(circle at 75% 25%,#3a3c68,#11131a 45%,#08090c)}
-.content{position:absolute;z-index:4;left:0;right:0;bottom:0;padding:20px 20px calc(94px + env(safe-area-inset-bottom));
+.content{position:absolute;z-index:4;left:0;right:0;bottom:0;padding:20px 20px 22px;
 max-height:73%;overflow:auto;-webkit-overflow-scrolling:touch}
 .category{font-size:10px;letter-spacing:1.1px;font-weight:850;color:#a7a2ff;text-transform:uppercase;margin-bottom:8px}
-.title{font-size:clamp(26px,7vw,43px);line-height:1.06;letter-spacing:-1.15px;font-weight:850;margin:0 0 12px}
-.summary{font-size:16px;line-height:1.43;color:#ececf0;max-width:680px;margin:0 0 13px}
+.title{font-size:clamp(23px,6.2vw,38px);line-height:1.06;letter-spacing:-1.15px;font-weight:850;margin:0 0 12px}
+.summary{font-size:15px;line-height:1.38;color:#ececf0;max-width:680px;margin:0 0 13px}
 .meta{font-size:11px;color:#c5c6cc;margin-bottom:13px}
 .actions{display:flex;gap:8px;flex-wrap:wrap}.action{border:1px solid #ffffff35;background:#101219c7;color:#fff;border-radius:13px;
 padding:10px 13px;font-size:12px;font-weight:750;backdrop-filter:blur(12px)}.action.primary{background:linear-gradient(110deg,var(--accent),var(--accent2));border-color:transparent}
-.side{position:absolute;right:13px;bottom:calc(105px + env(safe-area-inset-bottom));z-index:8;display:flex;flex-direction:column;gap:9px}
+.side{position:absolute;right:13px;bottom:24px;z-index:8;display:flex;flex-direction:column;gap:9px}
 .circle{width:43px;height:43px;border-radius:50%;border:1px solid #ffffff32;background:#0c0e14c7;color:#fff;display:grid;place-items:center;font-size:18px;backdrop-filter:blur(12px)}
 .hint{position:absolute;z-index:6;right:15px;top:50%;font-size:10px;color:#fff9;writing-mode:vertical-rl;transform:translateY(-50%);letter-spacing:.5px}
 .bottom{position:absolute;z-index:70;left:0;right:0;bottom:0;padding:8px 14px calc(8px + env(safe-area-inset-bottom));
 display:flex;justify-content:space-around;background:linear-gradient(to top,rgba(5,6,9,.94),rgba(5,6,9,.6),transparent);pointer-events:none}
 .nav{pointer-events:auto;border:0;background:none;color:#a8aab2;font-size:11px;font-weight:750;padding:7px 16px;text-align:center}.nav.active{color:#fff}
-.loader,.error{height:100dvh;display:grid;place-items:center;text-align:center;padding:30px;color:var(--muted);scroll-snap-align:start}
+.loader,.error{height:100%;min-height:100%;display:grid;place-items:center;text-align:center;padding:30px;color:var(--muted);scroll-snap-align:start}
 .spinner{width:30px;height:30px;border:3px solid #ffffff2b;border-top-color:#fff;border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 15px}
 .refresh{position:absolute;z-index:65;top:calc(103px + env(safe-area-inset-top));left:50%;transform:translateX(-50%);font-size:10px;color:#fff9;
 background:#11131bd9;border:1px solid #fff2;padding:6px 10px;border-radius:99px;opacity:0;transition:.2s;pointer-events:none}.refresh.show{opacity:1}
@@ -83,7 +84,7 @@ background:#fff;top:3px;left:3px;transition:.15s}.toggle.on:after{left:22px}
 </head>
 <body>
 <div class="app">
-<div class="top"><div class="toprow"><div class="logo"></div><div><div class="brand">ORBIT</div><div class="tag">The world, in context.</div></div><button class="search" onclick="openSearch()">⌕</button></div></div>
+<div class="top"><div class="toprow"><div class="logo"></div><div><div class="brand">ORBIT</div><div class="tag">The world, in context.</div></div><button class="search" id="refreshBtn" onclick="manualRefresh()" aria-label="Refresh news">↻</button><button class="search" onclick="openSearch()" aria-label="Search">⌕</button></div></div>
 <div class="categorybar" id="chips"></div>
 <div class="refresh" id="refresh">Refreshing latest stories…</div>
 <main class="feed" id="feed"></main>
@@ -198,7 +199,7 @@ function dedupe(items){
  }
  return out;
 }
-async function load(cat=current){
+async function load(cat=current,forceRefresh=false){
  current=cat;requestId++;const id=requestId;
  if(requestController)requestController.abort();
  requestController=new AbortController();
@@ -219,7 +220,7 @@ async function load(cat=current){
   clearTimeout(timer);
   if(id!==requestId)return;
   const cache=JSON.parse(localStorage.getItem("orbitLastFeed")||"null");
-  if(cache?.articles?.length){
+  if(!forceRefresh && cache?.articles?.length){
    articles=cache.articles;renderChips(false);renderStories(true);
    toast("Live feed unavailable — showing recent cached stories");
   }else{
@@ -299,15 +300,35 @@ function chooseCountry(c){prefs.country=c;persist();closeCountry();openSettings(
 function clearCache(){localStorage.removeItem("orbitLastFeed");toast("Recent feed cache cleared")}
 function toast(t){const e=$("toast");e.textContent=t;e.classList.add("show");clearTimeout(window._toast);window._toast=setTimeout(()=>e.classList.remove("show"),2200)}
 function applyTheme(){document.documentElement.classList.toggle("light",prefs.theme==="light")}
-let touchStartY=0,touchStartScroll=0;
-$("feed").addEventListener("touchstart",e=>{touchStartY=e.touches[0].clientY;touchStartScroll=$("feed").scrollTop},{passive:true});
-$("feed").addEventListener("touchend",e=>{
- const dy=e.changedTouches[0].clientY-touchStartY;
- // Refresh ONLY on downward pull while the feed is already at the top.
- if(dy>100 && touchStartScroll<=3){
-  $("refresh").classList.add("show");load(current).finally(()=>setTimeout(()=>$("refresh").classList.remove("show"),700));
- }
+let touchStartY=0,touchStartScroll=0,touchTracking=false;
+$("feed").addEventListener("touchstart",e=>{
+ touchStartY=e.touches[0].clientY;
+ touchStartScroll=$("feed").scrollTop;
+ touchTracking=true;
 },{passive:true});
+$("feed").addEventListener("touchmove",e=>{
+ if(!touchTracking)return;
+ // Native scrolling handles the feed. We only observe the gesture.
+},{passive:true});
+$("feed").addEventListener("touchend",e=>{
+ if(!touchTracking)return;
+ touchTracking=false;
+ const dy=e.changedTouches[0].clientY-touchStartY;
+ // A clear downward pull from the first story triggers refresh.
+ if(dy>70 && touchStartScroll<=8) manualRefresh();
+},{passive:true});
+
+async function manualRefresh(){
+ const btn=$("refreshBtn");
+ if(btn.classList.contains("refreshing")) return;
+ btn.classList.add("refreshing");
+ $("refresh").classList.add("show");
+ try{
+   await load(current,true);
+ }finally{
+   setTimeout(()=>{$("refresh").classList.remove("show");btn.classList.remove("refreshing")},500);
+ }
+}
 applyTheme();renderChips();load();
 </script>
 </body>
