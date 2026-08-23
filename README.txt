@@ -9,3 +9,9 @@ Changes from V6:
 - News summaries are now built from the feed's actual description/content and shown prominently under a small IN BRIEF label.
 - Image area and text treatment are closer to the approved ORBIT mockup.
 - No paid news API is introduced.
+
+V7.1 cache/update fix:
+- Bumped the web app revision.
+- Replaced the old V5 service-worker cache name.
+- Old service-worker caches are deleted on activation.
+- index.html and manifest.json use network-first fetching so GitHub Pages updates appear promptly.

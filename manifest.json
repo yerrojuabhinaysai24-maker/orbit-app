@@ -5,5 +5,6 @@
   "display": "standalone",
   "background_color": "#090a0e",
   "theme_color": "#635bff",
-  "description": "A full-screen, swipeable news experience."
+  "version": "0.7.1",
+  "description": "ORBIT V7.1 — premium full-screen, swipeable news experience."
 }
