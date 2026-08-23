@@ -50,7 +50,7 @@ background:linear-gradient(to bottom,rgba(0,0,0,.34),transparent 30%,rgba(8,9,13
 .content{position:absolute;z-index:4;left:0;right:0;bottom:0;padding:18px 20px 22px;max-height:72%;overflow:auto;background:linear-gradient(to top,rgba(8,9,13,.99) 0%,rgba(8,9,13,.96) 78%,rgba(8,9,13,0) 100%);padding-top:58px;-webkit-overflow-scrolling:touch}
 .contextlabel{font-size:9px;letter-spacing:1.3px;font-weight:850;color:#aeb3ff;margin:3px 0 6px}.category{font-size:10px;letter-spacing:1.1px;font-weight:850;color:#a7a2ff;text-transform:uppercase;margin-bottom:8px}
 .title{font-size:clamp(23px,6.2vw,38px);line-height:1.06;letter-spacing:-1.15px;font-weight:850;margin:0 0 12px}
-.summary{font-size:15px;line-height:1.45;color:#ececf0;max-width:680px;margin:0 0 12px;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:4;overflow:hidden}.why{font-size:9px;letter-spacing:1.2px;font-weight:850;color:#aeb3ff;margin:10px 0 5px}.whytext{font-size:13px;line-height:1.4;color:#d4d6de;margin:0 0 12px;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden}
+.summary{font-size:15px;line-height:1.5;color:#ececf0;max-width:680px;margin:0 0 12px;display:block;max-height:14.9em;overflow:hidden}.why{font-size:9px;letter-spacing:1.2px;font-weight:850;color:#aeb3ff;margin:10px 0 5px}.whytext{font-size:13px;line-height:1.4;color:#d4d6de;margin:0 0 12px;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden}
 .meta{font-size:11px;color:#c5c6cc;margin-bottom:13px}
 .actions{display:flex;gap:8px;flex-wrap:wrap}.action{border:1px solid #ffffff35;background:#101219c7;color:#fff;border-radius:13px;
 padding:10px 13px;font-size:12px;font-weight:750;backdrop-filter:blur(12px)}.action.primary{background:linear-gradient(110deg,var(--accent),var(--accent2));border-color:transparent}
@@ -109,7 +109,7 @@ background:#fff;top:3px;left:3px;transition:.15s}.toggle.on:after{left:22px}
 <div class="setting"><div><b>Category Updates</b><small>Updates from selected categories</small></div><button id="categoryToggle" class="toggle" onclick="togglePref('categoryUpdates')"></button></div>
 <div class="setting"><div><b>Offline cache</b><small>Keep a small recent-news cache</small></div><button class="action" onclick="clearCache()">Clear</button></div>
 </div>
-<p class="smallnote" style="margin-top:18px">ORBIT V8 uses GDELT for live story discovery and publisher social images, with public RSS used only as a secondary no-cost source for descriptions. No paid news API and no AI-generated images are used.</p>
+<p class="smallnote" style="margin-top:18px">ORBIT V9 uses GDELT and public Google News RSS for no-cost live discovery, prioritizes publisher imagery, and keeps original article links. No paid news API and no AI-generated images are used.</p>
 </div>
 
 <div class="modal" id="languageModal">
@@ -142,26 +142,112 @@ function sourceCountry(){const id=country()[0].toLowerCase();if(id==="us")return
 function queryFor(cat){if(cat==="Your Country")return `(sourcecountry:${sourceCountry()})`;if(cat==="Top Stories")return `(${categoryQueries["Top Stories"]}) sourcecountry:${sourceCountry()}`;return `(${categoryQueries[cat]||cat})`}
 function gdeltUrl(cat){let q=queryFor(cat);if(prefs.language!=="en")q+=` sourcelang:${languageGdelt()}`;const p=new URLSearchParams({query:q,mode:"artlist",maxrecords:"40",timespan:"24h",sort:"datedesc",format:"json"});return `${GDELT}?${p.toString()}`}
 function queryUrl(q){const c=country();return `https://news.google.com/rss/search?q=${encodeURIComponent(q)}&hl=${encodeURIComponent(c[2])}&gl=${c[3]}&ceid=${c[3]}:${prefs.language}`}
-function categoryRssUrl(cat){const map={"Top Stories":"https://feeds.bbci.co.uk/news/rss.xml","World":"https://feeds.bbci.co.uk/news/world/rss.xml","Technology":"https://feeds.bbci.co.uk/news/technology/rss.xml","Business":"https://feeds.bbci.co.uk/news/business/rss.xml","Sports":"https://feeds.bbci.co.uk/sport/0/rss.xml","Entertainment":"https://feeds.bbci.co.uk/news/entertainment_and_arts/rss.xml","Health":"https://feeds.bbci.co.uk/news/health/rss.xml","Science":"https://feeds.bbci.co.uk/news/science_and_environment/rss.xml","Education":"https://feeds.bbci.co.uk/news/education/rss.xml","Politics":"https://feeds.bbci.co.uk/news/politics/rss.xml"};return map[cat]||map["Top Stories"]}
+function rssQueryFor(cat){
+ if(cat==="Your Country")return `${country()[1]} latest news`;
+ if(cat==="Top Stories")return "latest breaking news world politics technology business science";
+ return categoryQueries[cat]||cat;
+}
+function categoryRssUrl(cat){return queryUrl(rssQueryFor(cat))}
 function absUrl(u){try{return new URL(u,location.href).href}catch(e){return ""}}
-function imageCandidates(x){const out=[];const add=(u,score=0)=>{u=absUrl(u);if(!u||!/^https?:\/\//i.test(u))return;if(/logo|avatar|icon|favicon|sprite/i.test(u))score-=60;if(!out.some(o=>o.url===u))out.push({url:u,score})};add(x.socialimage,120);add(x.imageurl,100);add(x.image,90);add(x.thumbnail,50);add(x.enclosure?.link,70);add(x.enclosure?.url,70);for(const h of [x.description,x.content,x["content:encoded"],x.summary]){const s=String(h||"");let m;const re=/<img[^>]+(?:src|data-src)=["']([^"']+)["'][^>]*>/gi;while((m=re.exec(s)))add(m[1],65)}out.forEach(o=>{if(/(1200|1280|1600|1920|2048|original|large|full)/i.test(o.url))o.score+=30;if(/(thumb|thumbnail|small|150x|200x|300x|320x)/i.test(o.url))o.score-=30});return out.sort((a,b)=>b.score-a.score).map(o=>o.url).slice(0,8)}
-function summaryOf(x){const vals=[x.description,x.content,x["content:encoded"],x.summary].map(clean).filter(Boolean);const chunks=[];for(const s of vals){for(const t of s.split(/(?<=[.!?])\s+/)){if(t.length>=35&&!chunks.includes(t))chunks.push(t);if(chunks.join(" ").length>520)break}if(chunks.join(" ").length>520)break}const text=chunks.join(" ").trim();return text?text.slice(0,480)+(text.length>480?"…":""):"Open the original report for the latest details, context and continuing updates."}
-function dedupe(items){const seen=new Set(),out=[];for(const x of items){const key=(x.url||x.link||"").split("#")[0].split("?")[0]||clean(x.title).toLowerCase();if(!key||seen.has(key))continue;seen.add(key);out.push(x)}return out}
+function imageCandidates(x){
+ const out=[];
+ const add=(u,score=0)=>{
+  u=absUrl(u);if(!u||!/^https?:\/\//i.test(u))return;
+  if(/logo|avatar|icon|favicon|sprite|tracking/i.test(u))score-=80;
+  if(!out.some(o=>o.url===u))out.push({url:u,score});
+ };
+ add(x.socialimage,150);add(x.imageurl,125);add(x.image,115);add(x.thumbnail,65);
+ add(x.enclosure?.link,105);add(x.enclosure?.url,105);add(x.thumbnail_url,70);
+ for(const h of [x.description,x.content,x["content:encoded"],x.summary]){
+  const s=String(h||"");let m;
+  const re=/<img[^>]+(?:src|data-src|data-original|data-lazy-src)=["']([^"']+)["'][^>]*>/gi;
+  while((m=re.exec(s)))add(m[1],90);
+ }
+ out.forEach(o=>{
+  if(/(1200|1280|1600|1920|2048|original|large|full|hero)/i.test(o.url))o.score+=35;
+  if(/(thumb|thumbnail|small|150x|200x|300x|320x|480x)/i.test(o.url))o.score-=35;
+ });
+ return out.sort((a,b)=>b.score-a.score).map(o=>o.url).slice(0,10);
+}
+function summaryOf(x){
+ const vals=[x.description,x.content,x["content:encoded"],x.summary,x.title].map(clean).filter(Boolean);
+ const chunks=[];
+ for(const s of vals){
+  for(const t of s.split(/(?<=[.!?])\s+/)){
+   const t2=t.trim();
+   if(t2.length>=35&&!chunks.some(c=>c===t2))chunks.push(t2);
+   if(chunks.join(" ").length>=760)break;
+  }
+  if(chunks.join(" ").length>=760)break;
+ }
+ let text=chunks.join(" ").trim();
+ if(text.length>760)text=text.slice(0,760).replace(/\s+\S*$/,'')+"…";
+ return text||"Open the original report for the latest details, context and continuing updates.";
+}
+function rssSource(item){
+ const a=clean(item.author||item.creator||item.source||"");
+ if(a)return a;
+ const t=clean(item.title||"");
+ const m=t.match(/\s[-–—|]\s([^|]+)$/);
+ return m?m[1].trim():"News source";
+}
+function rssOriginalUrl(item){
+ const u=item.link||item.guid||"";
+ return /^https?:\/\//i.test(u)?u:"";
+}
+function matchRss(g,rssItems){
+ if(!rssItems.length)return null;
+ const gt=clean(g.title).toLowerCase();
+ const gu=clean(g.url).toLowerCase();
+ return rssItems.find(r=>{
+  const ru=clean(r.link||r.guid).toLowerCase();
+  const rt=clean(r.title).toLowerCase();
+  return (gu&&ru&&gu===ru)||(rt&&gt&&(rt.includes(gt.slice(0,65))||gt.includes(rt.slice(0,65))));
+ })||null;
+}
+function makeArticle(x,rr,cat){
+ const title=clean(x.title||rr?.title);if(!title)return null;
+ const imgs=imageCandidates(x);
+ const rimgs=rr?imageCandidates(rr):[];
+ const all=[...imgs,...rimgs.filter(u=>!imgs.includes(u))].slice(0,10);
+ const url=x.url||rssOriginalUrl(rr);if(!url)return null;
+ return {id:url.slice(0,180),title,url,date:x.seendate||x.date||rr?.pubDate||new Date().toISOString(),source:x.domain||rssSource(rr||{}),images:all,image:all[0]||"",summary:summaryOf(rr||x),cat,live:true};
+}
 async function fetchJson(url,signal){const r=await fetch(url,{cache:"no-store",signal});if(!r.ok)throw Error("HTTP "+r.status);const d=await r.json();if(!d||!Array.isArray(d.articles))throw Error("bad GDELT response");return d.articles}
-async function fetchRss(url,signal){const r=await fetch(RSS_PROXY+encodeURIComponent(url),{cache:"no-store",signal});if(!r.ok)throw Error("HTTP "+r.status);const d=await r.json();if(d.status!=="ok"||!Array.isArray(d.items)||!d.items.length)throw Error("empty RSS");return d}
+async function fetchRss(url,signal){const r=await fetch(RSS_PROXY+encodeURIComponent(url),{cache:"no-store",signal});if(!r.ok)throw Error("HTTP "+r.status);const d=await r.json();if(d.status!=="ok"||!Array.isArray(d.items)||!d.items.length)throw Error("empty RSS");return d.items}
 async function load(cat=current,forceRefresh=false){
  if(cat==="Saved"){showSaved();return}
- current=cat;requestId++;const id=requestId;if(requestController)requestController.abort();requestController=new AbortController();const signal=requestController.signal;const timer=setTimeout(()=>requestController.abort(),12000);
+ current=cat;requestId++;const id=requestId;if(requestController)requestController.abort();requestController=new AbortController();const signal=requestController.signal;
+ const timer=setTimeout(()=>requestController.abort(),15000);
  renderChips(true);$("feed").innerHTML=loadingScreen();$("feed").scrollTop=0;
  try{
-   const gd=await fetchJson(gdeltUrl(cat),signal);if(id!==requestId)return;clearTimeout(timer);
-   const raw=dedupe(gd).slice(0,24);
-   let rss=null;try{rss=await fetchRss(cat==="Your Country"?queryUrl(`${country()[1]} latest news`):categoryRssUrl(cat),signal)}catch(e){}
-   const rssItems=rss?.items||[];const byTitle=new Map(rssItems.map(r=>[clean(r.title).toLowerCase(),r]));
-   articles=raw.map(x=>{const title=clean(x.title);const low=title.toLowerCase();const rr=byTitle.get(low)||rssItems.find(r=>{const rt=clean(r.title).toLowerCase();return rt.length>40&&(rt.includes(low.slice(0,55))||low.includes(rt.slice(0,55)))});const imgs=imageCandidates(x);return{id:(x.url||title).slice(0,180),title,url:x.url,date:x.seendate||x.date,source:x.domain||"News source",images:imgs,image:imgs[0]||"",summary:rr?summaryOf(rr):summaryOf(x),cat}}).filter(x=>x.title&&x.url);
-   if(!articles.length)throw Error("No stories");
-   localStorage.setItem("orbitLastFeed",JSON.stringify({version:8,country:prefs.country,language:prefs.language,category:cat,articles:articles.slice(0,20),savedAt:Date.now()}));renderChips(false);renderStories();
- }catch(e){clearTimeout(timer);if(id!==requestId)return;const cache=JSON.parse(localStorage.getItem("orbitLastFeed")||"null");if(!forceRefresh&&cache?.version>=7&&cache?.articles?.length){articles=cache.articles;current=cache.category||cat;renderChips(false);renderStories(true);toast("Live feed unavailable — showing recent stories")}else{$("feed").innerHTML=`<div class="error"><div><h2>We couldn't reach the live feed</h2><p>ORBIT could not reach the news service right now.</p><button class="action primary" onclick="load('${esc(cat)}',true)">Try again</button></div></div>`;renderChips(false)}}
+  const rssPromise=fetchRss(categoryRssUrl(cat),signal);
+  let gd=[];let gdeltOk=true;
+  try{gd=await fetchJson(gdeltUrl(cat),signal)}catch(e){gdeltOk=false;}
+  const rss=await rssPromise.catch(()=>[]);
+  if(id!==requestId)return;
+  clearTimeout(timer);
+  let raw=dedupe(gd).slice(0,40);
+  let built=[];
+  if(raw.length){
+   built=raw.map(x=>makeArticle(x,matchRss(x,rss),cat)).filter(Boolean);
+   // If GDELT has weak/missing coverage, supplement with fresh RSS stories.
+   const existing=new Set(built.map(a=>a.url));
+   for(const r of rss){const u=rssOriginalUrl(r);if(u&&!existing.has(u)){const a=makeArticle({},r,cat);if(a){built.push(a);existing.add(u)}}}
+  }else{
+   built=rss.map(r=>makeArticle({},r,cat)).filter(Boolean);
+  }
+  articles=dedupe(built).slice(0,24);
+  if(!articles.length)throw Error("No live stories");
+  localStorage.setItem("orbitLastFeed",JSON.stringify({version:9,country:prefs.country,language:prefs.language,category:cat,articles:articles.slice(0,20),savedAt:Date.now()}));
+  renderChips(false);renderStories(false);
+  if(!gdeltOk)toast("Live feed updated · using publisher RSS");
+ }catch(e){
+  clearTimeout(timer);if(id!==requestId)return;
+  const cache=JSON.parse(localStorage.getItem("orbitLastFeed")||"null");
+  if(cache?.articles?.length){articles=cache.articles.map(x=>({...x,live:false}));current=cache.category||cat;renderChips(false);renderStories(true);toast("Live news unavailable · showing your last update");}
+  else{$("feed").innerHTML=`<div class="error"><div><h2>We couldn't reach the live feed</h2><p>ORBIT couldn't reach the live news sources. Check your connection and try again.</p><button class="action primary" onclick="load('${esc(cat)}',true)">Try again</button></div></div>`;renderChips(false)}
+ }
 }
 function selectCategory(c){if(c===current&&requestController)return;load(c)}
 function renderChips(loading=false){
@@ -169,20 +255,6 @@ function renderChips(loading=false){
 }
 function loadingScreen(){
  return `<div class="loader"><div><div class="spinner"></div><strong>Loading ${esc(current)}</strong><p style="margin:7px 0 0">Finding the latest stories…</p></div></div>`;
-}
-async function fetchRss(url,signal){
- const r=await fetch(RSS_PROXY+encodeURIComponent(url),{cache:"no-store",signal});
- if(!r.ok)throw Error("HTTP "+r.status);
- const d=await r.json(); if(d.status!=="ok"||!Array.isArray(d.items)||!d.items.length)throw Error("empty");
- return d;
-}
-function dedupe(items){
- const seen=new Set(),out=[];
- for(const x of items){
-  const key=(x.link||"").split("#")[0].split("?")[0]||clean(x.title).toLowerCase();
-  if(!key||seen.has(key))continue;seen.add(key);out.push(x);
- }
- return out;
 }
 function nextImage(img){
  let list=[];
@@ -196,7 +268,7 @@ function story(x,i,cached=false){
  const fallback=`<div class="noimage"><div class="fallbackmark">◉</div><strong>${esc(x.cat)}</strong><span>No usable publisher image was supplied</span></div>`;
  const media=imgs.length?`<img src="${esc(imgs[0])}" alt="" loading="${i<2?"eager":"lazy"}" data-candidates="${esc(JSON.stringify(imgs))}" onerror="nextImage(this)">`:fallback;
  const sentences=String(x.summary||"").split(/(?<=[.!?])\s+/).filter(Boolean);const why=sentences.length>1?sentences[sentences.length-1]:"";
- return `<section class="story"><div class="hero">${media}</div><div class="content"><div class="category">${esc(x.cat)}</div><h1 class="title">${esc(x.title)}</h1><div class="contextlabel">IN BRIEF</div><p class="summary">${esc(x.summary)}</p>${why?`<div class="why">WHY IT MATTERS</div><p class="whytext">${esc(why)}</p>`:""}<div class="meta">${esc(x.source)} · ${ago(x.date)}${cached?" · Cached":""}</div><div class="actions"><button class="action ${s?"primary":""}" onclick="saveStory(${i})">${s?"♥ Saved":"♡ Save"}</button><button class="action" onclick="shareStory(${i})">↗ Share</button><button class="action primary" onclick="openSource(${i})">Read full story ↗</button></div></div><div class="side"><button class="circle" onclick="saveStory(${i})" aria-label="Save story">${s?"♥":"♡"}</button><button class="circle" onclick="shareStory(${i})" aria-label="Share story">↗</button></div>${i<articles.length-1?'<div class="hint">SWIPE UP ↑</div>':''}</section>`;
+ return `<section class="story"><div class="hero">${media}</div><div class="content"><div class="category">${esc(x.cat)}</div><h1 class="title">${esc(x.title)}</h1><div class="contextlabel">IN BRIEF</div><p class="summary">${esc(x.summary)}</p>${why?`<div class="why">WHY IT MATTERS</div><p class="whytext">${esc(why)}</p>`:""}<div class="meta">${esc(x.source)} · ${cached?`Last updated ${ago(x.date)}`:ago(x.date)}</div><div class="actions"><button class="action ${s?"primary":""}" onclick="saveStory(${i})">${s?"♥ Saved":"♡ Save"}</button><button class="action" onclick="shareStory(${i})">↗ Share</button><button class="action primary" onclick="openSource(${i})">Read full story ↗</button></div></div><div class="side"><button class="circle" onclick="saveStory(${i})" aria-label="Save story">${s?"♥":"♡"}</button><button class="circle" onclick="shareStory(${i})" aria-label="Share story">↗</button></div>${i<articles.length-1?'<div class="hint">SWIPE UP ↑</div>':''}</section>`;
 }
 function renderStories(cached=false){$("feed").innerHTML=articles.map((x,i)=>story(x,i,cached)).join("");$("feed").scrollTop=0}
 function openSource(i){if(articles[i]?.url)window.open(articles[i].url,"_blank","noopener,noreferrer")}
