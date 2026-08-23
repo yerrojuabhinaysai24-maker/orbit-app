@@ -7,6 +7,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <title>ORBIT — The world, in context.</title>
+<!-- ORBIT BUILD V10: fast latest-first refresh -->
 <link rel="manifest" href="manifest.json">
 <style>
 :root{
@@ -125,6 +126,8 @@ background:#fff;top:3px;left:3px;transition:.15s}.toggle.on:after{left:22px}
 
 <script>
 const RSS_PROXY="https://api.rss2json.com/v1/api.json?rss_url=";
+const BUILD_VERSION="10";
+const SOURCE_TIMEOUT=6500;
 const GDELT="https://api.gdeltproject.org/api/v2/doc/doc";
 const countries=[["US","United States","en-US","US"],["IN","India","en-IN","IN"],["GB","United Kingdom","en-GB","GB"],["CA","Canada","en-CA","CA"],["AU","Australia","en-AU","AU"],["NZ","New Zealand","en-NZ","NZ"],["SG","Singapore","en-SG","SG"],["AE","United Arab Emirates","en-AE","AE"],["DE","Germany","de-DE","DE"],["FR","France","fr-FR","FR"],["ES","Spain","es-ES","ES"],["IT","Italy","it-IT","IT"],["BR","Brazil","pt-BR","BR"],["MX","Mexico","es-MX","MX"],["JP","Japan","ja-JP","JP"],["KR","South Korea","ko-KR","KR"],["CN","China","zh-CN","CN"],["ID","Indonesia","id-ID","ID"],["ZA","South Africa","en-ZA","ZA"],["NG","Nigeria","en-NG","NG"]];
 const languages=[["en","English","english"],["hi","हिन्दी","hindi"],["bn","বাংলা","bengali"],["ta","தமிழ்","tamil"],["te","తెలుగు","telugu"],["mr","मराठी","marathi"],["gu","ગુજરાતી","gujarati"],["kn","ಕನ್ನಡ","kannada"],["ml","മലയാളം","malayalam"],["es","Español","spanish"],["fr","Français","french"],["de","Deutsch","german"],["pt","Português","portuguese"],["ja","日本語","japanese"],["ko","한국어","korean"],["zh","中文","chinese"]];
@@ -141,7 +144,7 @@ function languageGdelt(){return languages.find(x=>x[0]===prefs.language)?.[2]||"
 function sourceCountry(){const id=country()[0].toLowerCase();if(id==="us")return"unitedstates";if(id==="gb")return"unitedkingdom";return country()[1].toLowerCase().replace(/[^a-z]/g,"")}
 function queryFor(cat){if(cat==="Your Country")return `(sourcecountry:${sourceCountry()})`;if(cat==="Top Stories")return `(${categoryQueries["Top Stories"]}) sourcecountry:${sourceCountry()}`;return `(${categoryQueries[cat]||cat})`}
 function gdeltUrl(cat){let q=queryFor(cat);if(prefs.language!=="en")q+=` sourcelang:${languageGdelt()}`;const p=new URLSearchParams({query:q,mode:"artlist",maxrecords:"40",timespan:"24h",sort:"datedesc",format:"json"});return `${GDELT}?${p.toString()}`}
-function queryUrl(q){const c=country();return `https://news.google.com/rss/search?q=${encodeURIComponent(q)}&hl=${encodeURIComponent(c[2])}&gl=${c[3]}&ceid=${c[3]}:${prefs.language}`}
+function queryUrl(q){const c=country();return `https://news.google.com/rss/search?q=${encodeURIComponent(q)}&hl=${encodeURIComponent(c[2])}&gl=${c[3]}&ceid=${c[3]}:${prefs.language}&_=${Date.now()}`}
 function rssQueryFor(cat){
  if(cat==="Your Country")return `${country()[1]} latest news`;
  if(cat==="Top Stories")return "latest breaking news world politics technology business science";
@@ -213,40 +216,58 @@ function makeArticle(x,rr,cat){
  const url=x.url||rssOriginalUrl(rr);if(!url)return null;
  return {id:url.slice(0,180),title,url,date:x.seendate||x.date||rr?.pubDate||new Date().toISOString(),source:x.domain||rssSource(rr||{}),images:all,image:all[0]||"",summary:summaryOf(rr||x),cat,live:true};
 }
-async function fetchJson(url,signal){const r=await fetch(url,{cache:"no-store",signal});if(!r.ok)throw Error("HTTP "+r.status);const d=await r.json();if(!d||!Array.isArray(d.articles))throw Error("bad GDELT response");return d.articles}
-async function fetchRss(url,signal){const r=await fetch(RSS_PROXY+encodeURIComponent(url),{cache:"no-store",signal});if(!r.ok)throw Error("HTTP "+r.status);const d=await r.json();if(d.status!=="ok"||!Array.isArray(d.items)||!d.items.length)throw Error("empty RSS");return d.items}
+async function fetchJson(url,signal){const r=await fetch(url,{cache:"no-store",signal,headers:{"Accept":"application/json"}});if(!r.ok)throw Error("HTTP "+r.status);const d=await r.json();if(!d||!Array.isArray(d.articles)||!d.articles.length)throw Error("empty GDELT");return d.articles}
+async function fetchRss(url,signal){const r=await fetch(RSS_PROXY+encodeURIComponent(url),{cache:"no-store",signal,headers:{"Accept":"application/json"}});if(!r.ok)throw Error("HTTP "+r.status);const d=await r.json();if(d.status!=="ok"||!Array.isArray(d.items)||!d.items.length)throw Error("empty RSS");return d.items}
+function withTimeout(promise,ms,signal){return new Promise((resolve,reject)=>{let done=false;const timer=setTimeout(()=>{if(!done){done=true;reject(Error("timeout"));}},ms);const abort=()=>{if(!done){done=true;clearTimeout(timer);reject(new DOMException("Aborted","AbortError"));}};if(signal)signal.addEventListener("abort",abort,{once:true});promise.then(v=>{if(!done){done=true;clearTimeout(timer);resolve(v)}}).catch(e=>{if(!done){done=true;clearTimeout(timer);reject(e)}})})}
+function firstSuccessful(tasks){return new Promise((resolve,reject)=>{let left=tasks.length,errors=[];tasks.forEach(t=>t.then(v=>resolve(v)).catch(e=>{errors.push(e);if(--left===0)reject(errors[0]||Error("all sources failed"))}))})}
 async function load(cat=current,forceRefresh=false){
  if(cat==="Saved"){showSaved();return}
- current=cat;requestId++;const id=requestId;if(requestController)requestController.abort();requestController=new AbortController();const signal=requestController.signal;
- const timer=setTimeout(()=>requestController.abort(),15000);
+ current=cat;requestId++;const id=requestId;
+ if(requestController)requestController.abort();
+ requestController=new AbortController();const signal=requestController.signal;
  renderChips(true);$("feed").innerHTML=loadingScreen();$("feed").scrollTop=0;
+ const rssTask=withTimeout(fetchRss(categoryRssUrl(cat),signal),SOURCE_TIMEOUT,signal);
+ const gdeltTask=withTimeout(fetchJson(gdeltUrl(cat),signal),SOURCE_TIMEOUT,signal);
+ let first=null,firstName="";
+ try{first=await firstSuccessful([rssTask,gdeltTask]);firstName=Array.isArray(first)&&first[0]?.title&&first[0]?.pubDate?"rss":"gdelt";}catch(e){}
+ if(id!==requestId)return;
+ const process=(gd,rss)=>{
+   let raw=dedupe(gd||[]).slice(0,40),built=[];
+   if(raw.length){
+     built=raw.map(x=>makeArticle(x,matchRss(x,rss||[]),cat)).filter(Boolean);
+     const existing=new Set(built.map(a=>a.url));
+     for(const r of (rss||[])){const u=rssOriginalUrl(r);if(u&&!existing.has(u)){const a=makeArticle({},r,cat);if(a){built.push(a);existing.add(u)}}}
+   }else built=(rss||[]).map(r=>makeArticle({},r,cat)).filter(Boolean);
+   built=dedupe(built).sort((a,b)=>new Date(b.date)-new Date(a.date)).slice(0,24);
+   return built;
+ };
+ if(first){
+   const isRss=firstName==="rss";
+   const initial=process(isRss?[]:first,isRss?first:[]);
+   if(initial.length){
+     articles=initial;localStorage.setItem("orbitLastFeed",JSON.stringify({version:BUILD_VERSION,country:prefs.country,language:prefs.language,category:cat,articles:articles.slice(0,20),savedAt:Date.now()}));
+     renderChips(false);renderStories(false);toast("Latest stories loaded");
+   }
+ }
  try{
-  const rssPromise=fetchRss(categoryRssUrl(cat),signal);
-  let gd=[];let gdeltOk=true;
-  try{gd=await fetchJson(gdeltUrl(cat),signal)}catch(e){gdeltOk=false;}
-  const rss=await rssPromise.catch(()=>[]);
-  if(id!==requestId)return;
-  clearTimeout(timer);
-  let raw=dedupe(gd).slice(0,40);
-  let built=[];
-  if(raw.length){
-   built=raw.map(x=>makeArticle(x,matchRss(x,rss),cat)).filter(Boolean);
-   // If GDELT has weak/missing coverage, supplement with fresh RSS stories.
-   const existing=new Set(built.map(a=>a.url));
-   for(const r of rss){const u=rssOriginalUrl(r);if(u&&!existing.has(u)){const a=makeArticle({},r,cat);if(a){built.push(a);existing.add(u)}}}
-  }else{
-   built=rss.map(r=>makeArticle({},r,cat)).filter(Boolean);
-  }
-  articles=dedupe(built).slice(0,24);
-  if(!articles.length)throw Error("No live stories");
-  localStorage.setItem("orbitLastFeed",JSON.stringify({version:9,country:prefs.country,language:prefs.language,category:cat,articles:articles.slice(0,20),savedAt:Date.now()}));
-  renderChips(false);renderStories(false);
-  if(!gdeltOk)toast("Live feed updated · using publisher RSS");
+   const results=await Promise.allSettled([rssTask,gdeltTask]);
+   if(id!==requestId)return;
+   let rss=results[0].status==="fulfilled"?results[0].value:[];
+   let gd=results[1].status==="fulfilled"?results[1].value:[];
+   const merged=process(gd,rss);
+   if(merged.length){
+     articles=merged;localStorage.setItem("orbitLastFeed",JSON.stringify({version:BUILD_VERSION,country:prefs.country,language:prefs.language,category:cat,articles:articles.slice(0,20),savedAt:Date.now()}));
+     renderChips(false);renderStories(false);
+     if(first)toast("Feed refreshed · latest stories");else toast("Latest stories loaded");
+     return;
+   }
+   throw Error("No live stories");
  }catch(e){
-  clearTimeout(timer);if(id!==requestId)return;
-  const cache=JSON.parse(localStorage.getItem("orbitLastFeed")||"null");
-  if(cache?.articles?.length){articles=cache.articles.map(x=>({...x,live:false}));current=cache.category||cat;renderChips(false);renderStories(true);toast("Live news unavailable · showing your last update");}
-  else{$("feed").innerHTML=`<div class="error"><div><h2>We couldn't reach the live feed</h2><p>ORBIT couldn't reach the live news sources. Check your connection and try again.</p><button class="action primary" onclick="load('${esc(cat)}',true)">Try again</button></div></div>`;renderChips(false)}
+   if(id!==requestId)return;
+   if(articles.length&&first){renderChips(false);toast("Live update unavailable · showing latest result");return;}
+   const cache=JSON.parse(localStorage.getItem("orbitLastFeed")||"null");
+   if(cache?.articles?.length){articles=cache.articles.map(x=>({...x,live:false}));current=cache.category||cat;renderChips(false);renderStories(true);toast("Live news unavailable · showing last update");}
+   else{$("feed").innerHTML=`<div class="error"><div><h2>We couldn't reach the live feed</h2><p>ORBIT couldn't reach the live news sources. Check your connection and try again.</p><button class="action primary" onclick="load('${esc(cat)}',true)">Try again</button></div></div>`;renderChips(false)}
  }
 }
 function selectCategory(c){if(c===current&&requestController)return;load(c)}
