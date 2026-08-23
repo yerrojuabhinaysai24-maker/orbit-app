@@ -1,6 +1,14 @@
-# ORBIT V8
+# ORBIT V11
 
-Immersive one-story-at-a-time news feed. GDELT is the primary no-cost discovery layer and publisher social images are preferred. Public RSS is only a secondary no-cost source for descriptions.
+ORBIT V11 fixes the live-feed and category-routing failures from V10.
 
+- Uses GDELT directly through JSONP, avoiding the public RSS proxy that could fail in the browser.
+- Keeps each category's cache separate so a failed category never jumps back to For You.
+- Refreshes the selected category only and sorts newest first.
+- Uses publisher-provided images when available and never generates news images.
+- Enriches the first stories with GDELT Context snippets after the first paint when available.
+- Supports dark/light mode and the existing language/country preferences.
 
-ORBIT V9: expanded IN BRIEF context, live RSS fallback when GDELT is unavailable, improved publisher image ranking, and clearer cached/live status.
+Deploy `index.html`, `manifest.json`, and `sw.js` to the GitHub Pages branch. `README.md` is documentation only.
+
+Test with `?v=11` after deployment to bypass an old browser URL/cache.
